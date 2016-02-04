@@ -23,7 +23,7 @@
     <repositories>
         <repository>
         <id>nexus</id>
-        <url>http://58.215.141.219:8888/nexus/content/groups/Infra-group/</url>
+        <url>http://adpom:8888/nexus/content/groups/Infra-group/</url>
         </repository>
     </repositories>
 
