@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Class-Path: jcommon-1.0.23.jar metrics-json-3.0.1.jar metrics-jvm-3.0.
+ 1.jar metrics-client-1.0.6.jar commons-logging-1.1.1.jar slf4j-api-1.
+ 7.5.jar commons-io-2.4.jar jackson-core-2.2.2.jar jackson-annotations
+ -2.2.2.jar commons-beanutils-1.8.3.jar metrics-core-3.0.2.jar metrics
+ -servlets-3.0.1.jar jfreechart-1.0.19.jar jackson-databind-2.2.2.jar 
+ metrics-healthchecks-3.0.1.jar
+Main-Class: RMAna
+
