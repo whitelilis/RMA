@@ -107,8 +107,8 @@ public class RMAna implements TailerListener {
                     e.printStackTrace();
                 }
 
-                //reporter.add("rmLogAnalyze", toReport.result);
-                //reporter.report();
+                reporter.add("rmLogAnalyze", toReport.result);
+                reporter.report();
                 // clear mem
                 cache.remove(jobId);
             } else {// don't care
