@@ -1,9 +1,10 @@
+import org.apache.log4j.Logger;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 /**i
  * Created by liuzhe on 16/2/3.
