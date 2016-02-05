@@ -12,19 +12,18 @@ public class ReportData{
     public long allMemMBxSeconds = 0;
     public static final String logTimeFormat = "yyyy-MM-dd HH:mm:ss";
     public static SimpleDateFormat df = new SimpleDateFormat(logTimeFormat);
-    public HashMap<String, String> result = new HashMap<>();
+    public HashMap<String, String> result;
 
-    public HashMap<String, String> prepareForReport(String jobId, String user, String queue){
+    public HashMap<String, String> prepareForReport(HashMap<String, String> aim){
         startedTasks.clear();
-        result.put("jobId", jobId);
-        result.put("user", user);
-        result.put("queue", queue);
+        result = aim;
+
         result.put("memMBxSecond", String.format("%d", allMemMBxSeconds));
         return result;
     }
 
     public void show(){
-        System.out.println(String.format("%s  %s:%s:%s:%s", df.format(new Date()), result.get("jobId"), result.get("user"), result.get("queue"), result.get("memMBxSecond")));
+        System.out.println(String.format("%s##%s##%s##%s##%s##%s##%s", df.format(new Date()), result.get("jobId"), result.get("user"), result.get("queue"), result.get("memMBxSecond"), result.get("status"), result.get("jobName")));
     }
 
     public static long secondsBetween(String start, String end){

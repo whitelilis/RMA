@@ -76,17 +76,26 @@ public class RMAna implements TailerListener {
         }else {
             if (line.contains("RMAppManager$ApplicationSummary: appId=")) {
                 //job finished
-                Pattern p = Pattern.compile("(.*)application_(\\d+_\\d+).*user=(\\w+),queue=([^,]+),.*");
+                Pattern p = Pattern.compile("(.*)application_(\\d+_\\d+),name=(.+),user=(\\w+),queue=([^,]+),.*finalStatus=(\\w+)");
                 Matcher m = p.matcher(line);
                 m.find();
 
+                HashMap<String, String> aim = new HashMap<>();
                 String jobId = m.group(2);
-                String user = m.group(3);
-                String queue = m.group(4);
+                String user = m.group(4);
+                String queue = m.group(5);
+
+                aim.put("jobId", jobId);
+                aim.put("jobName", m.group(3));
+                aim.put("user", user);
+                aim.put("queue", queue);
+                aim.put("status", m.group(6));
+
+
                 ensureJobExist(jobId);
 
                 ReportData toReport = cache.get(jobId);
-                HashMap<String, String> r = toReport.prepareForReport(jobId, user, queue);
+                HashMap<String, String> r = toReport.prepareForReport(aim);
                 toReport.show();
 
                 addUse(userUsed, user, toReport.allMemMBxSeconds);
@@ -98,8 +107,8 @@ public class RMAna implements TailerListener {
                     e.printStackTrace();
                 }
 
-                reporter.add("rmLogAnalyze", toReport.result);
-                reporter.report();
+                //reporter.add("rmLogAnalyze", toReport.result);
+                //reporter.report();
                 // clear mem
                 cache.remove(jobId);
             } else {// don't care
