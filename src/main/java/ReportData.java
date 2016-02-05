@@ -3,6 +3,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**i
  * Created by liuzhe on 16/2/3.
@@ -21,9 +22,11 @@ public class ReportData{
         result.put("memMBxSecond", String.format("%d", allMemMBxSeconds));
         return result;
     }
+    static Logger log = Logger.getLogger(ReportData.class.getName());
 
     public void show(){
-        System.out.println(String.format("%s##%s##%s##%s##%s##%s##%s", df.format(new Date()), result.get("jobId"), result.get("user"), result.get("queue"), result.get("memMBxSecond"), result.get("status"), result.get("jobName")));
+        log.info(String.format("%s##%s##%s##%s##%s##%s", result.get("jobId"), result.get("user"), result.get("queue"), result.get("memMBxSecond"), result.get("status"), result.get("jobName")));
+        //System.out.println(String.format("%s##%s##%s##%s##%s##%s##%s", df.format(new Date()), result.get("jobId"), result.get("user"), result.get("queue"), result.get("memMBxSecond"), result.get("status"), result.get("jobName")));
     }
 
     public static long secondsBetween(String start, String end){
