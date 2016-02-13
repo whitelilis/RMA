@@ -1,11 +1,8 @@
-import com.admaster.data.metrics.core.AdMonitor;
-import com.admaster.data.metrics.core.Reporter;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -17,10 +14,10 @@ import java.util.regex.Pattern;
 
 public class RMAna implements TailerListener {
 
-    public static Reporter reporter = AdMonitor.getReporter("1");
-    public static HashMap<String, ReportData> cache = new HashMap<>();
-    public static HashMap<String, Long> userUsed = new HashMap<>();
-    public static HashMap<String, Long> queueUserd = new HashMap<>();
+    //public static final Reporter reporter = AdMonitor.getReporter("1");
+    public static final HashMap<String, ReportData> cache = new HashMap<>();
+    public static final HashMap<String, Long> userUsed = new HashMap<>();
+    public static final HashMap<String, Long> queueUsed = new HashMap<>();
     public String startTime;
 
 
@@ -39,7 +36,9 @@ public class RMAna implements TailerListener {
     }
 
     public void init(Tailer tailer) {
-        this.startTime = ReportData.df.format(new Date());
+        synchronized (this) {
+            this.startTime = ReportData.df.format(new Date());
+        }
     }
 
     public void fileNotFound() {
@@ -95,20 +94,21 @@ public class RMAna implements TailerListener {
                 ensureJobExist(jobId);
 
                 ReportData toReport = cache.get(jobId);
-                HashMap<String, String> r = toReport.prepareForReport(aim);
+                toReport.prepareForReport(aim);
                 toReport.show();
 
                 addUse(userUsed, user, toReport.allMemMBxSeconds);
-                addUse(queueUserd, queue, toReport.allMemMBxSeconds);
+                addUse(queueUsed, queue, toReport.allMemMBxSeconds);
                 try {
-                    PiePng.makeJPG("user.jpg", String.format("From %s By user", startTime), userUsed);
-                    PiePng.makeJPG("queue.jpg", String.format("From %s By Queue",startTime), queueUserd);
+                    String now = ReportData.df.format(new Date());
+                    PiePng.makeJPG("user.jpg", String.format("By user %s -> %s", startTime, now), userUsed);
+                    PiePng.makeJPG("queue.jpg", String.format("By queue %s -> %s", startTime, now), queueUsed);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                reporter.add("rmLogAnalyze", toReport.result);
-                reporter.report();
+                //reporter.add("rmLogAnalyze", toReport.result);
+                //reporter.report();
                 // clear mem
                 cache.remove(jobId);
             } else {// don't care

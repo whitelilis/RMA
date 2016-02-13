@@ -13,7 +13,7 @@ public class ReportData{
     public HashMap<String, String> startedTasks = new HashMap<>(); // taskId : startTimeString
     public long allMemMBxSeconds = 0;
     public static final String logTimeFormat = "yyyy-MM-dd HH:mm:ss";
-    public static SimpleDateFormat df = new SimpleDateFormat(logTimeFormat);
+    public static final SimpleDateFormat df = new SimpleDateFormat(logTimeFormat);
     public HashMap<String, String> result;
 
     public HashMap<String, String> prepareForReport(HashMap<String, String> aim){
