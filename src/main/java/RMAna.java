@@ -3,6 +3,7 @@ import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -32,7 +33,7 @@ public class RMAna implements TailerListener {
                     return name.startsWith(logPrefix) && ! logPrefix.equals(name);
                 }
             });
-
+            Arrays.sort(logs);
             for(File f : logs){
                 replayOneFile(f);
             }
