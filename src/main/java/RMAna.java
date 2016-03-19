@@ -1,3 +1,4 @@
+import com.sun.org.apache.bcel.internal.generic.LoadClass;
 import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
@@ -20,6 +21,8 @@ public class RMAna implements TailerListener {
     public static final HashMap<String, Long> userUsed = new HashMap<>();
     public static final HashMap<String, Long> queueUsed = new HashMap<>();
     public String startTime = null;
+    public static long userAll = 0;
+    public static long queueAll = 0;
 
 
 
@@ -59,6 +62,8 @@ public class RMAna implements TailerListener {
                 String[] parts = line.split(" ");
                 if(parts.length >= 4) {
                     String[] needs = parts[4].split("##");
+                    userAll += Long.decode(needs[3]);
+                    queueAll += Long.decode(needs[3]);
                     addUse(userUsed, needs[1], Long.decode(needs[3]));
                     addUse(queueUsed, needs[2], Long.decode(needs[3]));
                 }else{
@@ -105,7 +110,7 @@ public class RMAna implements TailerListener {
             return;
         }else {
             String time = line.substring(0, ReportData.logTimeFormat.length());
-            if (line.contains("FSSchedulerNode: Assigned container container")) {
+            if (line.contains("SchedulerNode: Assigned container container")) {
                 //start task
                 Pattern p = Pattern.compile("(.*)container container_((\\d+_\\d+).*) of capacity");
                 Matcher m = p.matcher(line);
@@ -114,7 +119,7 @@ public class RMAna implements TailerListener {
                 String taskId = m.group(2);
                 ensureJobExist(jobId);
                 cache.get(jobId).addTaskStarted(taskId, time);
-            } else if (line.contains("FSSchedulerNode: Released container container")) {
+            } else if (line.contains("SchedulerNode: Released container container")) {
                 //end task
                 Pattern p = Pattern.compile("(.*)container container_((\\d+_\\d+).*) of capacity <memory:(\\d+),");
                 Matcher m = p.matcher(line);
@@ -150,11 +155,13 @@ public class RMAna implements TailerListener {
                     toReport.show();
 
                     addUse(userUsed, user, toReport.allMemMBxSeconds);
+                    userAll += toReport.allMemMBxSeconds;
                     addUse(queueUsed, queue, toReport.allMemMBxSeconds);
+                    queueAll += toReport.allMemMBxSeconds;
                     try {
                         String now = ReportData.df.format(new Date());
-                        PiePng.makeJPG("user.jpg", String.format("By user %s -> %s", startTime, now), userUsed);
-                        PiePng.makeJPG("queue.jpg", String.format("By queue %s -> %s", startTime, now), queueUsed);
+                        PiePng.makeJPG("user.jpg", String.format("By user %s -> %s : %d", startTime, now, userAll), userUsed);
+                        PiePng.makeJPG("queue.jpg", String.format("By queue %s -> %s : %d", startTime, now, queueAll), queueUsed);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
