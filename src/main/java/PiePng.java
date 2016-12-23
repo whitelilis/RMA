@@ -3,7 +3,9 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
+import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.general.PieDataset;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +28,12 @@ public class PiePng {
             dataset.setValue(i.getKey(), i.getValue());
         }
 
+
+        PieDataset newSet  = DatasetUtilities.createConsolidatedPieDataset(dataset, "other", 0.01); // bug, not percent;
+
         JFreeChart chart = ChartFactory.createPieChart(
                 title, // chart title
-                dataset, // data
+                newSet, // data
                 true, // include legend
                 true,
                 true);
@@ -56,9 +61,11 @@ public class PiePng {
     }
     public static void main(String[] args) throws Exception {
         HashMap<String, Long> h = new HashMap<>();
-        h.put("a", 3L);
-        h.put("b", 5L);
-        h.put("c", 5L);
+        h.put("a", 30L);
+        h.put("b", 50L);
+        h.put("c", 50L);
+        h.put("k", 1L);
+        h.put("m", 1L);
         makeJPG("/tmp/test.jpg", "test", h);
     }
 }
