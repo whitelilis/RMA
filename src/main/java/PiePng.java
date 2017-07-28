@@ -7,7 +7,9 @@ import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -61,11 +63,23 @@ public class PiePng {
     }
     public static void main(String[] args) throws Exception {
         HashMap<String, Long> h = new HashMap<>();
-        h.put("a", 30L);
-        h.put("b", 50L);
-        h.put("c", 50L);
-        h.put("k", 1L);
-        h.put("m", 1L);
+        HashMap<String, Long> h2 = new HashMap<>();
+        BufferedReader br = new BufferedReader(new FileReader(new File("/tmp/mapping_result")));
+        String line = br.readLine();
+        while(line != null){
+            String[] parts = line.split(" ");
+            String key = new String(parts[0]);
+            String[] keyParts = key.split(";", -1);
+            key = keyParts[keyParts.length - 2];
+            h.put(parts[0], Long.parseLong(parts[1]));
+            if(h2.containsKey(key)) {
+                h2.put(key, Long.parseLong(parts[1]) + h2.get(key));
+            }else{
+                h2.put(key, Long.parseLong(parts[1]));
+            }
+            line = br.readLine();
+        }
+        makeJPG("/tmp/test_sim.jpg", "test", h2);
         makeJPG("/tmp/test.jpg", "test", h);
     }
 }

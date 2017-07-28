@@ -50,6 +50,7 @@ public class RMAna implements TailerListener {
         System.out.println("process " + f.getName());
         BufferedReader br = new BufferedReader(new FileReader(f));
         String line = br.readLine();
+        String endDate = "default_end";
         while(line != null){
             // 2016-02-14 00:01:44,608 INFO ReportData: 1453215494036_495810##track_report##root.track.igrp##3342336##SUCCEEDED##Pi
             if(line.length() > ReportData.logTimeFormat.length() + 3 && line.charAt(4) == '-'){
@@ -59,6 +60,7 @@ public class RMAna implements TailerListener {
                 }
                 String[] parts = line.split(" ");
                 if(parts.length >= 4) {
+                    endDate = parts[0];
                     String[] needs = parts[4].split("##");
                     userAll += Long.decode(needs[3]);
                     queueAll += Long.decode(needs[3]);
@@ -71,6 +73,8 @@ public class RMAna implements TailerListener {
             line = br.readLine();
         }
         br.close();
+        PiePng.makeJPG("user.jpg", String.format("By user %s -> %s : %d", startTime, endDate, userAll), userUsed);
+        PiePng.makeJPG("queue.jpg", String.format("By queue %s -> %s : %d", startTime, endDate, queueAll), queueUsed);
     }
 
     private void addUse(HashMap<String, Long> aim, String name, long increase){
