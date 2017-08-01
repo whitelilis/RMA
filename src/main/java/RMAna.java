@@ -21,6 +21,7 @@ public class RMAna implements TailerListener {
     public String startTime = null;
     public static long userAll = 0;
     public static long queueAll = 0;
+    public static MetricReporter metricReporter = new MetricReporter();
 
 
 
@@ -64,8 +65,8 @@ public class RMAna implements TailerListener {
                     String[] needs = parts[4].split("##");
                     userAll += Long.decode(needs[3]);
                     queueAll += Long.decode(needs[3]);
-                    addUse(userUsed, needs[1], Long.decode(needs[3]));
-                    addUse(queueUsed, needs[2], Long.decode(needs[3]));
+                    addUse(null, userUsed, needs[1], Long.decode(needs[3]));
+                    addUse(null, queueUsed, needs[2], Long.decode(needs[3]));
                 }else{
                     System.err.println("length error :" + line);
                 }
@@ -77,8 +78,13 @@ public class RMAna implements TailerListener {
         PiePng.makeJPG("queue.jpg", String.format("By queue %s -> %s : %d", startTime, endDate, queueAll), queueUsed);
     }
 
-    private void addUse(HashMap<String, Long> aim, String name, long increase){
-    if(aim.containsKey(name)){
+    private void addUse(String cName, HashMap<String, Long> aim, String name, long increase){
+        if(cName != null && cName.length() > 2) {
+            this.metricReporter.addMetric(cName, name, increase);
+        }else{
+            // replay? or some number is not need in to report
+        }
+        if(aim.containsKey(name)){
             aim.put(name, aim.get(name) + increase);
         }else{
             aim.put(name, increase);
@@ -156,9 +162,9 @@ public class RMAna implements TailerListener {
                     toReport.prepareForReport(aim);
                     toReport.show();
 
-                    addUse(userUsed, user, toReport.allMemMBxSeconds);
+                    addUse("yarn_user_use", userUsed, user, toReport.allMemMBxSeconds);
                     userAll += toReport.allMemMBxSeconds;
-                    addUse(queueUsed, queue, toReport.allMemMBxSeconds);
+                    addUse("yarn_queue_use", queueUsed, queue, toReport.allMemMBxSeconds);
                     queueAll += toReport.allMemMBxSeconds;
                     try {
                         String now = ReportData.df.format(new Date());
